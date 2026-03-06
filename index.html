@@ -1,35 +1,47 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<title>API Edad</title>
 </head>
+
 <body>
-    <pre id="json-response">Cargando API...</pre>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const fechaNacimiento = urlParams.get('fecha');
-        let respuesta = {};
+<script>
 
-        if (fechaNacimiento) {
-            const fechaNac = new Date(fechaNacimiento + "T00:00:00"); // Forzamos formato local
-            const hoy = new Date();
-            
-            if (isNaN(fechaNac.getTime())) {
-                respuesta = { "error": "Formato inválido. Usa YYYY-MM-DD" };
-            } else {
-                let edad = hoy.getFullYear() - fechaNac.getFullYear();
-                const m = hoy.getMonth() - fechaNac.getMonth();
-                if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
-                    edad--;
-                }
-                respuesta = { "fecha_nacimiento": fechaNacimiento, "edad": edad };
-            }
-        } else {
-            respuesta = { "instrucciones": "Agrega ?fecha=YYYY-MM-DD al final de la URL" };
-        }
+function calcularEdad(fecha) {
+    const nacimiento = new Date(fecha);
+    const hoy = new Date();
 
-        document.getElementById('json-response').textContent = JSON.stringify(respuesta, null, 2);
-    </script>
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+    }
+
+    return edad;
+}
+
+const params = new URLSearchParams(window.location.search);
+const fecha = params.get("fecha");
+
+let respuesta;
+
+if (!fecha) {
+    respuesta = {
+        error: "No se proporcionó fecha"
+    };
+} else {
+    respuesta = {
+        fecha_nacimiento: fecha,
+        edad: calcularEdad(fecha)
+    };
+}
+
+document.body.innerText = JSON.stringify(respuesta);
+
+</script>
+
 </body>
 </html>
